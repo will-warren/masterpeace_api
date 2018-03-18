@@ -13,8 +13,8 @@ class TextMP(db.Model):
     date_modified = db.Column(
         db.DateTime, default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp())
-    # tags
-    # likes
+    # tags - many to many
+    # likes - one to many, count of user ids
 
     def __init__(self, title):
         """initialize with title."""

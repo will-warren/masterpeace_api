@@ -10,7 +10,7 @@ class TextMPTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        textmp = {'title': "Watermelons",
+        self.textmp = {'title': "Watermelons",
                  'author': "Charles Simic",
                  'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"}
 
@@ -21,13 +21,13 @@ class TextMPTestCase(unittest.TestCase):
 
     def test_create(self):
         """Test API can create a TextMP (POST request)"""
-        res = self.client().post('/textmp/', data=textmp)
+        res = self.client().post('/textmp/', data=self.textmp)
         self.assertEqual(res.status_code, 201)
         self.assertIn('Watermelons', str(res.data))
 
     def test_retrieve_all(self):
         """Test API can get a TextMP (GET request)."""
-        res = self.client().post('/textmp/', data=textmp)
+        res = self.client().post('/textmp/', data=self.textmp)
         self.assertEqual(res.status_code, 201)
         res = self.client().get('/textmp/')
         self.assertEqual(res.status_code, 200)
@@ -35,7 +35,7 @@ class TextMPTestCase(unittest.TestCase):
 
     def test_retrieve_by_id(self):
         """Test API can get a single TextMP by using it's id."""
-        rv = self.client().post('/textmp/', data=textmp)
+        rv = self.client().post('/textmp/', data=self.textmp)
         self.assertEqual(rv.status_code, 201)
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
@@ -47,13 +47,16 @@ class TextMPTestCase(unittest.TestCase):
         """Test API can edit an existing TextMP. (PUT request)"""
         rv = self.client().post(
             '/textmp/',
-            data={'name': 'Eat, pray and love'})
+            data={'title': "Watermelons",
+                 'author': "Charles Simic",
+                 'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
+            })
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/textmp/1',
-            data={{'title': "Jazz",
+            data={'title': "Jazz",
                    'author': "Van G. Garrett",
-                   'post': "we sing funk jazz groove \n we very seldom play blues \n our duet is cool"}
+                   'post': "we sing funk jazz groove \n we very seldom play blues \n our duet is cool"
             })
         self.assertEqual(rv.status_code, 200)
         results = self.client().get('/textmp/1')
@@ -63,11 +66,13 @@ class TextMPTestCase(unittest.TestCase):
         """Test API can delete an existing TextMP. (DELETE request)."""
         rv = self.client().post(
             '/textmp/',
-            data={'name': 'Eat, pray and love'})
+            data={'title': "Watermelons",
+                 'author': "Charles Simic",
+                 'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"})
         self.assertEqual(rv.status_code, 201)
         res = self.client().delete('/textmp/1')
         self.assertEqual(res.status_code, 200)
-        # Test to see if it exists, should return a 404
+        # 404 if post DNE
         result = self.client().get('/textmp/1')
         self.assertEqual(result.status_code, 404)
 
