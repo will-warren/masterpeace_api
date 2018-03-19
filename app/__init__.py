@@ -17,6 +17,7 @@ def create_app(config_name):
 
     @app.route('/textmp/', methods=['POST', 'GET'])
     def textmps():
+        print(request)
         if request.method == "POST":
             title = str(request.data.get('title', ''))
             if title:
@@ -56,7 +57,7 @@ def create_app(config_name):
     @app.route('/textmp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_textmps(id, **kwargs):
         # retrieve a textmp by its id
-        textmp = Bucketlist.query.filter_by(id=id).first()
+        textmp = TextMP.query.filter_by(id=id).first()
         if not textmp:
             # Raise a 404 HTTPException if not foud
             abort(404)
