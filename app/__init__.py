@@ -17,11 +17,12 @@ def create_app(config_name):
 
     @app.route('/textmp/', methods=['POST', 'GET'])
     def textmps():
-        print(request)
         if request.method == "POST":
             title = str(request.data.get('title', ''))
             if title:
                 textmp = TextMP(title=title)
+                textmp.post = str(request.data.get('post', ''))
+                textmp.author = str(request.data.get('author', ''))
                 textmp.save()
                 response = jsonify({
                     'id'    : textmp.id,
@@ -52,7 +53,7 @@ def create_app(config_name):
             response.status_code = 200
             return response
     
-    return app
+ 
 
     @app.route('/textmp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_textmps(id, **kwargs):
@@ -65,12 +66,13 @@ def create_app(config_name):
         if request.method == "DELETE":
             textmp.delete()
             return {
-                "message": "TextMP {} deleted successfully".format(textmp.id)
+                "message": "TextMP {} deleted successfully".format(textmp.title)
             }, 200
         
         elif request.method == 'PUT':
-            title = str(request.data.get('title', ''))
-            textmp.title = title
+            textmp.title = str(request.data.get('title', ''))
+            textmp.post = str(request.data.get('post', ''))
+            textmp.author = str(request.data.get('author', ''))
             textmp.save()
             response = jsonify({
                     'id'    : textmp.id,

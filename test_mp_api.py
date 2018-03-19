@@ -10,9 +10,9 @@ class TextMPTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
-        self.textmp = {'title': "Watermelons",
-                 'author': "Charles Simic",
-                 'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"}
+        self.textmp = {"title": "Watermelons",
+                 "author": "Charles Simic",
+                 "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"}
 
         # binds the app to the current context
         with self.app.app_context():
@@ -47,28 +47,28 @@ class TextMPTestCase(unittest.TestCase):
         """Test API can edit an existing TextMP. (PUT request)"""
         rv = self.client().post(
             '/textmp/',
-            data={'title': "Watermelons",
-                 'author': "Charles Simic",
-                 'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
+            data={"title": "Watermelons",
+                 "author": "Charles Simic",
+                 "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
             })
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/textmp/1',
-            data={'title': "Jazz",
-                   'author': "Van G. Garrett",
-                   'post': "we sing funk jazz groove \n we very seldom play blues \n our duet is cool"
+            data={"title": "Jazz",
+                  "author": "Van G. Garrett",
+                  "post": "we sing funk jazz groove \n we very seldom play blues \n our duet is cool"
             })
         self.assertEqual(rv.status_code, 200)
         results = self.client().get('/textmp/1')
-        self.assertIn('Dont just eat', str(results.data))
+        self.assertIn('we sing funk jazz groove', str(results.data))
 
     def test_delete(self):
         """Test API can delete an existing TextMP. (DELETE request)."""
         rv = self.client().post(
             '/textmp/',
-            data={'title': "Watermelons",
-                 'author': "Charles Simic",
-                 'post': "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"})
+            data={"title": "Watermelons",
+                 "author": "Charles Simic",
+                 "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"})
         self.assertEqual(rv.status_code, 201)
         res = self.client().delete('/textmp/1')
         self.assertEqual(res.status_code, 200)
