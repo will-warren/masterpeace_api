@@ -14,9 +14,7 @@ class TextMPTestCase(unittest.TestCase):
                  "author": "Charles Simic",
                  "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"}
 
-        # binds the app to the current context
         with self.app.app_context():
-            # create all tables
             db.create_all()
 
     def test_create(self):
@@ -68,12 +66,92 @@ class TextMPTestCase(unittest.TestCase):
             '/textmp/',
             data={"title": "Watermelons",
                  "author": "Charles Simic",
-                 "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"})
+                 "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
+            })
         self.assertEqual(rv.status_code, 201)
         res = self.client().delete('/textmp/1')
         self.assertEqual(res.status_code, 200)
         # 404 if post DNE
         result = self.client().get('/textmp/1')
+        self.assertEqual(result.status_code, 404)
+
+    def tearDown(self):
+        """teardown all initialized variables."""
+        with self.app.app_context():
+            db.session.remove()
+            db.drop_all()
+
+
+class ImageMPTestCase(unittest.TestCase):
+    """This tests the ImageMP API routes"""
+
+    def setUp(self):
+        self.app = create_app(config_name="testing")
+        self.client = self.app.test_client
+        self.imagemp = {"title": "Sun",
+                 "author": "Creative Commons",
+                 "post": "https://en.wikipedia.org/wiki/Sun#/media/File:Sun_poster.svg"
+        }
+
+        with self.app.app_context():
+            db.create_all()
+    
+    def test_create(self):
+        """Tests creation of an ImageMP (POST)"""
+        res = self.client().post('/imagemp/', data=self.imagemp)
+        self.assertEqual(res.status_code, 201)
+        self.assertIn('Sun', str(res.data))
+
+    def test_retrieve_all(self):
+        """Tests retrieving all ImageMPs (GET)"""
+        res = self.client().post('/imagemp/', data=self.imagemp)
+        self.assertEqual(res.status_code, 201)
+        res = self.client().get('/imagemp/')
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('Sun', str(res.data))
+
+    def test_retrieve_by_id(self):
+        """Tests retrieving an ImageMP by its id (GET)"""
+        rv = self.client().post('/imagemp/', data=self.imagemp)
+        self.assertEqual(rv.status_code, 201)
+        result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
+        result = self.client().get(
+            '/imagemp/{}'.format(result_in_json['id']))
+        self.assertEqual(result.status_code, 200)
+        self.assertIn('Sun', str(result.data))
+
+    def test_update(self):
+        """Tests updating an ImageMP (PUT)"""
+        rv = self.client().post(
+            '/imagemp/',
+            data={"title": "Sun",
+                 "author": "Creative Commons",
+                 "post": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sun_poster.svg"
+            })
+        self.assertEqual(rv.status_code, 201)
+        rv = self.client().put(
+            '/textmp/1',
+            data={"title": "Trombone",
+                  "author": "Creative Commons",
+                  "post": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Posaune.jpg"
+            })
+        self.assertEqual(rv.status_code, 200)
+        results = self.client().get('/imagemp/1')
+        self.assertIn('Trombone', str(results.data))
+
+    def test_delete(self):
+        """Tests deleting an ImageMP (DELETE)"""
+        rv = self.client().post(
+            '/imagemp/',
+            data={"title": "Sun",
+                 "author": "Creative Commons",
+                 "post": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sun_poster.svg"
+            })
+        self.assertEqual(rv.status_code, 201)
+        res = self.client().delete('/imagemp/1')
+        self.assertEqual(res.status_code, 200)
+        # 404 if post DNE
+        result = self.client().get('/imagemp/1')
         self.assertEqual(result.status_code, 404)
 
     def tearDown(self):

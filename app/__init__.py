@@ -98,4 +98,12 @@ def create_app(config_name):
             response.status_code = 200
             return response
 
+    # @app.route('/imagemp/', methods=["POST", "GET"])
+    # def imagemps():
+    #     return response
+
+    # @app.route('/imagemp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    # def mod_imagemps(id, **kwargs):
+    #     return response
+    
     return app
