@@ -86,6 +86,7 @@ class ImageMPTestCase(unittest.TestCase):
     """This tests the ImageMP API routes"""
 
     def setUp(self):
+        """Set ups vars for testing"""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.imagemp = {"title": "Sun",
@@ -130,7 +131,7 @@ class ImageMPTestCase(unittest.TestCase):
             })
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
-            '/textmp/1',
+            '/imagemp/1',
             data={"title": "Trombone",
                   "author": "Creative Commons",
                   "post": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Posaune.jpg"

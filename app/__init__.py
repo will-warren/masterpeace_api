@@ -7,7 +7,7 @@ from instance.config import app_config
 db = SQLAlchemy()
 
 def create_app(config_name):
-    from app.models import TextMP
+    from app.models import TextMP, ImageMP
 
     app = FlaskAPI(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
@@ -98,12 +98,87 @@ def create_app(config_name):
             response.status_code = 200
             return response
 
-    # @app.route('/imagemp/', methods=["POST", "GET"])
-    # def imagemps():
-    #     return response
+    # image file will be read as a url but loaded as a file
+    # need to add file upload for images (POST)
+    @app.route('/imagemp/', methods=["GET", "POST"])
+    def imagemps():
+        if request.method == "POST":
+            title = str(request.data.get('title', ''))
+            if title:
+                imagemp = ImageMP(title=title)
+                imagemp.post = str(request.data.get('post', ''))
+                imagemp.author = str(request.data.get('author', ''))
+                imagemp.save()
+                response = jsonify({
+                    'id'    : imagemp.id,
+                    'title' : imagemp.title,
+                    'author': imagemp.author,
+                    'post'  : imagemp.post,
+                    'date_created' :    imagemp.date_created,
+                    'date_modified':    imagemp.date_modified
+                })
+                response.status_code = 201
+                return response
+        else:
+            # GET req
+            imagemps = ImageMP.get_all()
+            results = []
 
-    # @app.route('/imagemp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-    # def mod_imagemps(id, **kwargs):
-    #     return response
+            for mp in imagemps:
+                obj = {
+                    'id'    : mp.id,
+                    'title' : mp.title,
+                    'author': mp.author,
+                    'post'  : mp.post,
+                    'date_created' : mp.date_created,
+                    'date_modified': mp.date_modified
+                }
+                results.append(obj)
+            response = jsonify(results)
+            response.status_code = 200
+            return response
+
+    @app.route('/imagemp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    def mod_imagemps(id, **kwargs):
+        # retrieve a textmp by its id
+        imagemp = ImageMP.query.filter_by(id=id).first()
+        if not imagemp:
+            # Raise a 404 HTTPException if not foud
+            abort(404)
+
+        if request.method == "DELETE":
+            imagemp.delete()
+            return {
+                "message": "ImageMP {} deleted successfully".format(imagemp.title)
+            }, 200
+        
+        elif request.method == 'PUT':
+            imagemp.title = str(request.data.get('title', ''))
+            imagemp.post = str(request.data.get('post', ''))
+            imagemp.author = str(request.data.get('author', ''))
+            imagemp.save()
+            response = jsonify({
+                    'id'    : imagemp.id,
+                    'title' : imagemp.title,
+                    'author': imagemp.author,
+                    'post'  : imagemp.post,
+                    'date_created' : imagemp.date_created,
+                    'date_modified': imagemp.date_modified
+            })
+            response.status_code = 200
+            return response
+        
+        else:
+            # GET
+            response = jsonify({
+                    'id'    : imagemp.id,
+                    'title' : imagemp.title,
+                    'author': imagemp.author,
+                    'post'  : imagemp.post,
+                    'date_created' : imagemp.date_created,
+                    'date_modified': imagemp.date_modified
+            })
+            response.status_code = 200
+            return response
     
     return app
