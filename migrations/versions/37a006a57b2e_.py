@@ -21,15 +21,11 @@ def upgrade():
     op.create_table('TextMP',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=55), nullable=True),
-    sa.Column('author', sa.String(length=25), nullable=True),
     sa.Column('post', sa.String(length=1000), nullable=True),
     sa.Column('date_created', sa.DateTime(), nullable=True),
     sa.Column('date_modified', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_table('textmp')
-    op.drop_table('text_mp')
-    op.drop_table('textMP')
     # ### end Alembic commands ###
 
 
