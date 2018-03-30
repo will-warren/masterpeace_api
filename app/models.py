@@ -1,5 +1,7 @@
 from app import db
 from flask_bcrypt import Bcrypt
+import jwt
+from datetime import datetime, timedelta
 
 class User(db.Model):
     """ This represents the User model """
@@ -30,6 +32,39 @@ class User(db.Model):
         """ Saves user to db, when creating or editing model """
         db.session.add(self)
         db.session.commit()
+
+    def generate_token(self, user_id):
+        """ Generate the access token """
+
+        try:
+            payload = {
+                'exp': datetime.utcnow() + timedelta(minutes=10), # should be until sign out or browser is closed
+                'iat': datetime.utcnow(),
+                'sub': user_id
+            }
+
+            jwt_string = jwt.encode(
+                payload,
+                current_app.config.get('SECRET'),
+                algorithm="HS256"
+            )
+
+            return jwt_string
+        
+        except Exception as e:
+            # returns error as string
+            return str(e)
+
+    @staticmethod
+    def decode_token(token):
+        """Decodes access toekn from Auth header"""
+        try:
+            payload = jwt.decode(token, current_app.config.get('SECRET'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return "Expired token. Please login to get a new token"
+        except jwt.InvalidTokenError:
+            return "Invalid token. Please register or login"
 
 class TextMP(db.Model):
     """This class represents the TextMP table."""
