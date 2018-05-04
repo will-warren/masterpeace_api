@@ -52,7 +52,6 @@ class User(db.Model):
             return jwt_string
         
         except Exception as e:
-            # returns error as string
             return str(e)
 
     @staticmethod
@@ -82,9 +81,8 @@ class TextMP(db.Model):
     # tags - many to many
     # likes - one to many, count of user ids
 
-    def __init__(self, title, author):
+    def __init__(self, title):
         self.title = title
-        self.author = author
 
     def save(self):
         db.session.add(self)
@@ -118,9 +116,8 @@ class ImageMP(db.Model):
     # tags - many to many
     # likes - one to many, count of user ids
 
-    def __init__(self, title, author):
+    def __init__(self, title):
         self.title = title
-        self.author = author
 
     def save(self):
         db.session.add(self)
