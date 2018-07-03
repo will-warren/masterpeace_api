@@ -43,9 +43,39 @@ class RegistrationView(MethodView):
 
             return make_response(jsonify(response)), 202
 
-registration_view = RegistrationView.as_view('register_view')
 
-auth_blueprint.add_url_rule(
-        '/auth/register',
-        view_func = registration_view,
-        methods=['POST'])
+class LoginView(MethodView):
+    """Handles login and acess token generation"""
+
+    def post(self):
+        """ POST request for tihs view. url --->url/login"""
+        try:
+            user = User.query.filter_by(email=request.data['email']).first()
+
+            if user and user.password_is_valid(request.data['password']):
+                access_token = user.generate_token(user.id)
+                if access_token:
+                    response = {
+                        'message': 'You logged in successfully',
+                        'access_token': access_token.decode()
+                    }
+                    return make_response(jsonify(response)), 200
+            else:
+                response = {
+                    'message': 'Invalid email or password, Please try again'
+                }
+                return make_response(jsonify(response)), 401
+
+        except Exception as e:
+            response = {
+                'message': str(e)
+            }
+            return make_response(jsonify(response)), 500
+    
+    
+registration_view = RegistrationView.as_view('registration_view')
+login_view = LoginView.as_view('login_view')
+
+auth_blueprint.add_url_rule('/auth/register', view_func=registration_view, methods=['POST'])
+auth_blueprint.add_url_rule('/auth/login', view_func=login_view, methods=['POST'])
+

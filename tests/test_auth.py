@@ -46,14 +46,14 @@ class TextMPTestCase(unittest.TestCase):
         rv = self.client().post(
             '/textmp/',
             data={"title": "Watermelons",
-                 "author": 1,
+                 "author": "Charles Simic",
                  "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
             })
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/textmp/1',
             data={"title": "Jazz",
-                  "author": 2,
+                  "author": "Van G. Garrett",
                   "post": "we sing funk jazz groove \n we very seldom play blues \n our duet is cool"
             })
         self.assertEqual(rv.status_code, 200)
@@ -65,7 +65,7 @@ class TextMPTestCase(unittest.TestCase):
         rv = self.client().post(
             '/textmp/',
             data={"title": "Watermelons",
-                 "author": 1,
+                 "author": "Charles Simic",
                  "post": "Green Buddhas / On the fruit stand / We eat the smiles / And spit out the teeth"
             })
         self.assertEqual(rv.status_code, 201)
@@ -90,7 +90,7 @@ class ImageMPTestCase(unittest.TestCase):
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.imagemp = {"title": "Sun",
-                 "author": 1,
+                 "author": "Creative Commons",
                  "post": "https://en.wikipedia.org/wiki/Sun#/media/File:Sun_poster.svg"
         }
 
@@ -126,14 +126,14 @@ class ImageMPTestCase(unittest.TestCase):
         rv = self.client().post(
             '/imagemp/',
             data={"title": "Sun",
-                 "author": 1,
+                 "author": "Creative Commons",
                  "post": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sun_poster.svg"
             })
         self.assertEqual(rv.status_code, 201)
         rv = self.client().put(
             '/imagemp/1',
             data={"title": "Trombone",
-                  "author": 2,
+                  "author": "Creative Commons",
                   "post": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Posaune.jpg"
             })
         self.assertEqual(rv.status_code, 200)
@@ -145,7 +145,7 @@ class ImageMPTestCase(unittest.TestCase):
         rv = self.client().post(
             '/imagemp/',
             data={"title": "Sun",
-                 "author": 1,
+                 "author": "Creative Commons",
                  "post": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sun_poster.svg"
             })
         self.assertEqual(rv.status_code, 201)
