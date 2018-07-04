@@ -36,7 +36,7 @@ def create_app(config_name):
                 return response
         else:
             # GET req
-            textmps = TextMP.get_all()
+            textmps = TextMP.get_all(str(request.data.get('author')))
             results = []
 
             for mp in textmps:
@@ -121,7 +121,7 @@ def create_app(config_name):
                 return response
         else:
             # GET req
-            imagemps = ImageMP.get_all()
+            imagemps = ImageMP.get_all(str(request.data.get('author')))
             results = []
 
             for mp in imagemps:

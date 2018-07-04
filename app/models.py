@@ -1,7 +1,7 @@
 from app import db
 from flask_bcrypt import Bcrypt
-import jwt
 from datetime import datetime, timedelta
+import jwt
 
 class User(db.Model):
     """ This represents the User model """
@@ -56,7 +56,7 @@ class User(db.Model):
 
     @staticmethod
     def decode_token(token):
-        """Decodes access toekn from Auth header"""
+        """Decodes access token from Auth header"""
         try:
             payload = jwt.decode(token, current_app.config.get('SECRET'))
             return payload['sub']
@@ -90,7 +90,7 @@ class TextMP(db.Model):
 
     @staticmethod
     def get_all(user_id):
-        return TextMP.query.all(author=user_id)
+        return TextMP.query.filter_by(author=user_id)
 
     def delete(self):
         db.session.delete(self)
@@ -125,7 +125,7 @@ class ImageMP(db.Model):
 
     @staticmethod
     def get_all(user_id):
-        return ImageMP.query.all(author=user_id)
+        return ImageMP.query.filter_by(author=user_id)
 
     def delete(self):
         db.session.delete(self)
