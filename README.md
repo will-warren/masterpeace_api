@@ -31,5 +31,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ### Acknowledgments
 
-* Thanks to [Scotch.io])(https://scotch.io/tutorials/build-a-restful-api-with-flask-the-tdd-way-part-2#token-based-authentication) for helping me understand the basics
+* Thanks to [Scotch.io](https://scotch.io/tutorials/build-a-restful-api-with-flask-the-tdd-way-part-2#token-based-authentication) for helping me understand the basics
 
