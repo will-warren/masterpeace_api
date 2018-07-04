@@ -1,13 +1,13 @@
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
-from flask import request, jsonify, abort
+from flask import request, jsonify, abort, make_response
 
 from instance.config import app_config
 
 db = SQLAlchemy()
 
 def create_app(config_name):
-    from app.models import TextMP, ImageMP
+    from app.models import TextMP, ImageMP, User
 
     app = FlaskAPI(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
@@ -17,169 +17,222 @@ def create_app(config_name):
 
     @app.route('/textmp/', methods=['POST', 'GET'])
     def textmps():
-        if request.method == "POST":
-            title = str(request.data.get('title', ''))
-            if title:
-                textmp = TextMP(title=title)
-                textmp.post = str(request.data.get('post', ''))
-                textmp.author = str(request.data.get('author', ''))
-                textmp.save()
-                response = jsonify({
-                    'id'    : textmp.id,
-                    'title' : textmp.title,
-                    'author': textmp.author,
-                    'post'  : textmp.post,
-                    'date_created' : textmp.date_created,
-                    'date_modified': textmp.date_modified
-                })
-                response.status_code = 201
-                return response
-        else:
-            # GET req
-            textmps = TextMP.get_all(str(request.data.get('author')))
-            results = []
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
 
-            for mp in textmps:
-                obj = {
-                    'id'    : mp.id,
-                    'title' : mp.title,
-                    'author': mp.author,
-                    'post'  : mp.post,
-                    'date_created' : mp.date_created,
-                    'date_modified': mp.date_modified
+        if access_token:
+            user_id = User.decode_token(access_token)
+            # if error user_id is a string
+            if not isinstance(user_id, str):
+                if request.method == "POST":
+                    title = str(request.data.get('title', ''))
+                    if title:
+                        textmp = TextMP(title=title)
+                        textmp.post = str(request.data.get('post', ''))
+                        textmp.author = str(request.data.get('author', user_id))
+                        textmp.save()
+                        response = jsonify({
+                            'id'    : textmp.id,
+                            'title' : textmp.title,
+                            'author': textmp.author,
+                            'post'  : textmp.post,
+                            'date_created' : textmp.date_created,
+                            'date_modified': textmp.date_modified
+                        })
+                        response.status_code = 201
+                        return response
+                else:
+                    # GET req
+                    textmps = TextMP.get_all(user_id)
+                    results = []
+
+                    for mp in textmps:
+                        obj = {
+                            'id'    : mp.id,
+                            'title' : mp.title,
+                            'author': mp.author,
+                            'post'  : mp.post,
+                            'date_created' : mp.date_created,
+                            'date_modified': mp.date_modified
+                        }
+                        results.append(obj)
+                    response = jsonify(results)
+                    response.status_code = 200
+                    return response
+            
+            else:
+                message = user_id
+                response = {
+                    'message': message
                 }
-                results.append(obj)
-            response = jsonify(results)
-            response.status_code = 200
-            return response
+                return make_response(jsonify(response)), 401
     
  
 
     @app.route('/textmp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_textmps(id, **kwargs):
-        # retrieve a textmp by its id
-        textmp = TextMP.query.filter_by(id=id).first()
-        if not textmp:
-            # Raise a 404 HTTPException if not foud
-            abort(404)
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
 
-        if request.method == "DELETE":
-            textmp.delete()
-            return {
-                "message": "TextMP {} deleted successfully".format(textmp.title)
-            }, 200
-        
-        elif request.method == 'PUT':
-            textmp.title = str(request.data.get('title', ''))
-            textmp.post = str(request.data.get('post', ''))
-            textmp.author = str(request.data.get('author', ''))
-            textmp.save()
-            response = jsonify({
-                    'id'    : textmp.id,
-                    'title' : textmp.title,
-                    'author': textmp.author,
-                    'post'  : textmp.post,
-                    'date_created' : textmp.date_created,
-                    'date_modified': textmp.date_modified
-            })
-            response.status_code = 200
-            return response
-        
-        else:
-            # GET
-            response = jsonify({
-                    'id'    : textmp.id,
-                    'title' : textmp.title,
-                    'author': textmp.author,
-                    'post'  : textmp.post,
-                    'date_created' : textmp.date_created,
-                    'date_modified': textmp.date_modified
-            })
-            response.status_code = 200
-            return response
+        if access_token:
+            user_id = User.decode_token(access_token)
+            # if error user_id is a string
+            if not isinstance(user_id, str):
+                # retrieve a textmp by its id
+                textmp = TextMP.query.filter_by(id=id).first()
+                if not textmp:
+                    # Raise a 404 HTTPException if not foud
+                    abort(404)
+
+                if request.method == "DELETE":
+                    textmp.delete()
+                    return {
+                        "message": "TextMP {} deleted successfully".format(textmp.title)
+                    }, 200
+                
+                elif request.method == 'PUT':
+                    textmp.title = str(request.data.get('title', ''))
+                    textmp.post = str(request.data.get('post', ''))
+                    textmp.author = str(request.data.get('author', ''))
+                    textmp.save()
+                    response = jsonify({
+                            'id'    : textmp.id,
+                            'title' : textmp.title,
+                            'author': textmp.author,
+                            'post'  : textmp.post,
+                            'date_created' : textmp.date_created,
+                            'date_modified': textmp.date_modified
+                    })
+                    response.status_code = 200
+                    return response
+                
+                else:
+                    # GET
+                    response = jsonify({
+                            'id'    : textmp.id,
+                            'title' : textmp.title,
+                            'author': textmp.author,
+                            'post'  : textmp.post,
+                            'date_created' : textmp.date_created,
+                            'date_modified': textmp.date_modified
+                    })
+                    response.status_code = 200
+                    return response
+            else:
+                message = user_id
+                response = {
+                    'message': message
+                }
+                return make_response(jsonify(response)), 401
 
     # image file will be read as a url but loaded as a file
     # need to add file upload for images (POST)
     @app.route('/imagemp/', methods=["GET", "POST"])
     def imagemps():
-        if request.method == "POST":
-            title = str(request.data.get('title', ''))
-            if title:
-                imagemp = ImageMP(title=title)
-                imagemp.post = str(request.data.get('post', ''))
-                imagemp.author = str(request.data.get('author', ''))
-                imagemp.save()
-                response = jsonify({
-                    'id'    : imagemp.id,
-                    'title' : imagemp.title,
-                    'author': imagemp.author,
-                    'post'  : imagemp.post,
-                    'date_created' :    imagemp.date_created,
-                    'date_modified':    imagemp.date_modified
-                })
-                response.status_code = 201
-                return response
-        else:
-            # GET req
-            imagemps = ImageMP.get_all(str(request.data.get('author')))
-            results = []
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
 
-            for mp in imagemps:
-                obj = {
-                    'id'    : mp.id,
-                    'title' : mp.title,
-                    'author': mp.author,
-                    'post'  : mp.post,
-                    'date_created' : mp.date_created,
-                    'date_modified': mp.date_modified
+        if access_token:
+            user_id = User.decode_token(access_token)
+            # if error user_id is a string
+            if not isinstance(user_id, str):
+                if request.method == "POST":
+                    title = str(request.data.get('title', ''))
+                    if title:
+                        imagemp = ImageMP(title=title)
+                        imagemp.post = str(request.data.get('post', ''))
+                        imagemp.author = str(request.data.get('author', ''))
+                        imagemp.save()
+                        response = jsonify({
+                            'id'    : imagemp.id,
+                            'title' : imagemp.title,
+                            'author': imagemp.author,
+                            'post'  : imagemp.post,
+                            'date_created' :    imagemp.date_created,
+                            'date_modified':    imagemp.date_modified
+                        })
+                        response.status_code = 201
+                        return response
+                else:
+                    # GET req
+                    imagemps = ImageMP.get_all(str(request.data.get('author')))
+                    results = []
+
+                    for mp in imagemps:
+                        obj = {
+                            'id'    : mp.id,
+                            'title' : mp.title,
+                            'author': mp.author,
+                            'post'  : mp.post,
+                            'date_created' : mp.date_created,
+                            'date_modified': mp.date_modified
+                        }
+                        results.append(obj)
+                    response = jsonify(results)
+                    response.status_code = 200
+                    return response
+            else:
+                message = user_id
+                response = {
+                    'message': message
                 }
-                results.append(obj)
-            response = jsonify(results)
-            response.status_code = 200
-            return response
+                return make_response(jsonify(response)), 401
 
     @app.route('/imagemp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_imagemps(id, **kwargs):
-        # retrieve a textmp by its id
-        imagemp = ImageMP.query.filter_by(id=id).first()
-        if not imagemp:
-            # Raise a 404 HTTPException if not foud
-            abort(404)
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
 
-        if request.method == "DELETE":
-            imagemp.delete()
-            return {
-                "message": "ImageMP {} deleted successfully".format(imagemp.title)
-            }, 200
-        
-        elif request.method == 'PUT':
-            imagemp.title = str(request.data.get('title', ''))
-            imagemp.post = str(request.data.get('post', ''))
-            imagemp.author = str(request.data.get('author', ''))
-            imagemp.save()
-            response = jsonify({
-                    'id'    : imagemp.id,
-                    'title' : imagemp.title,
-                    'author': imagemp.author,
-                    'post'  : imagemp.post,
-                    'date_created' : imagemp.date_created,
-                    'date_modified': imagemp.date_modified
-            })
-            response.status_code = 200
-            return response
-        
-        else:
-            # GET
-            response = jsonify({
-                    'id'    : imagemp.id,
-                    'title' : imagemp.title,
-                    'author': imagemp.author,
-                    'post'  : imagemp.post,
-                    'date_created' : imagemp.date_created,
-                    'date_modified': imagemp.date_modified
-            })
-            response.status_code = 200
-            return response
+        if access_token:
+            user_id = User.decode_token(access_token)
+            # if error user_id is a string
+            if not isinstance(user_id, str):
+                # retrieve a imagemp by its id
+                imagemp = ImageMP.query.filter_by(id=id).first()
+                if not imagemp:
+                    # Raise a 404 HTTPException if not foud
+                    abort(404)
+
+                if request.method == "DELETE":
+                    imagemp.delete()
+                    return {
+                        "message": "ImageMP {} deleted successfully".format(imagemp.title)
+                    }, 200
+                
+                elif request.method == 'PUT':
+                    imagemp.title = str(request.data.get('title', ''))
+                    imagemp.post = str(request.data.get('post', ''))
+                    imagemp.author = str(request.data.get('author', ''))
+                    imagemp.save()
+                    response = jsonify({
+                            'id'    : imagemp.id,
+                            'title' : imagemp.title,
+                            'author': imagemp.author,
+                            'post'  : imagemp.post,
+                            'date_created' : imagemp.date_created,
+                            'date_modified': imagemp.date_modified
+                    })
+                    response.status_code = 200
+                    return response
+                
+                else:
+                    # GET
+                    response = jsonify({
+                            'id'    : imagemp.id,
+                            'title' : imagemp.title,
+                            'author': imagemp.author,
+                            'post'  : imagemp.post,
+                            'date_created' : imagemp.date_created,
+                            'date_modified': imagemp.date_modified
+                    })
+                    response.status_code = 200
+                    return response
+            else:
+                message = user_id
+                response = {
+                    'message': message
+                }
+                return make_response(jsonify(response)), 401
     
     from .auth import auth_blueprint
     app.register_blueprint(auth_blueprint)
