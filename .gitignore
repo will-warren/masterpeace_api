@@ -4,3 +4,4 @@ __pycache__
 mp_api/
 mpAPI/
 *.pyc
+auth_keys.txt
