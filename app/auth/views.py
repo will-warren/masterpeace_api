@@ -13,7 +13,6 @@ class RegistrationView(MethodView):
         user = User.query.filter_by(email=request.data['email']).first()
 
         if not user:
-
             try:
                 post_data = request.data
 
@@ -48,10 +47,9 @@ class LoginView(MethodView):
     """Handles login and acess token generation"""
 
     def post(self):
-        """ POST request for tihs view. url --->url/login"""
+        """ POST request for this view. url --->url/login"""
         try:
             user = User.query.filter_by(email=request.data['email']).first()
-
             if user and user.password_is_valid(request.data['password']):
                 access_token = user.generate_token(user.id)
                 if access_token:
@@ -70,8 +68,7 @@ class LoginView(MethodView):
             response = {
                 'message': str(e)
             }
-            return make_response(jsonify(response)), 500
-    
+            return make_response(jsonify(response)), 500    
     
 registration_view = RegistrationView.as_view('registration_view')
 login_view = LoginView.as_view('login_view')

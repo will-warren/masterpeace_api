@@ -1,6 +1,7 @@
 from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, jsonify, abort, make_response
+from flask_cors import CORS
 
 from instance.config import app_config
 
@@ -15,6 +16,8 @@ def create_app(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
+    CORS(app, resources=r'/*')
+    
     @app.route('/textmp/', methods=['POST', 'GET'])
     def textmps():
         auth_header = request.headers.get('Authorization')
