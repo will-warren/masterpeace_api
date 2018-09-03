@@ -15,10 +15,13 @@ class RegistrationView(MethodView):
         if not user:
             try:
                 post_data = request.data
-
                 email = post_data['email']
                 password = post_data['password']
                 user = User(email=email, password=password)
+                user.location=post_data['location']
+                user.quip=post_data['quip']
+                user.photo=post_data['photo']
+                user.display_name=post_data['display_name']
                 user.save()
 
                 response = {
@@ -55,7 +58,8 @@ class LoginView(MethodView):
                 if access_token:
                     response = {
                         'message': 'You logged in successfully',
-                        'access_token': access_token.decode()
+                        'access_token': access_token.decode(),
+                        'user_name': user.email
                     }
                     return make_response(jsonify(response)), 200
             else:

@@ -13,7 +13,11 @@ class AuthTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.user_data = {
             'email': 'test@example.com',
-            'password': 'password_test'
+            'password': 'password_test',
+            'location': 'my desk',
+            'quip': 'computers',
+            'photo': 'http://profilephoto.com',
+            'display_name': 'eye_heart_tests'
         }
 
         with self.app.app_context():

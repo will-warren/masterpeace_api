@@ -1,8 +1,11 @@
 from app import db
 from flask_bcrypt import Bcrypt
-from flask import current_app
+from flask import abort, current_app
 from datetime import datetime, timedelta
 import jwt
+
+## TODO add patch, options methods to all models
+
 
 class User(db.Model):
     """ This represents the User model """
@@ -17,6 +20,10 @@ class User(db.Model):
         'TextMP', order_by='TextMP.id', cascade="all, delete-orphan")
     imagemps = db.relationship(
         'ImageMP', order_by='ImageMP.id', cascade="all, delete-orphan")
+    quip = db.Column(db.String(500), nullable=True)
+    photo = db.Column(db.String(100))
+    location = db.Column(db.String(25))
+    deleted = db.Column(db.Boolean(), default=False)
     # followers 
     # following
 
@@ -56,6 +63,23 @@ class User(db.Model):
             return str(e)
 
     @staticmethod
+    def get(email):
+        user = User.query.filter_by(email=email).first()
+        if user.deleted:
+            abort(404)
+        return user
+
+    def delete(self):
+        user = User.query.filter_by(email=self.email).first()
+        if user.deleted:
+            abort(404)
+        user.deleted = True
+        db.session.commit()
+
+    def __repr__(self):
+        return "<User: {}>".format(self.email)
+
+    @staticmethod
     def decode_token(token):
         """Decodes access token from Auth header"""
         try:
@@ -85,6 +109,9 @@ class TextMP(db.Model):
     def __init__(self, title):
         self.title = title
 
+    def __repr__(self):
+        return "<TextMP: {}>".format(self.title)
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -96,9 +123,6 @@ class TextMP(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
-    def __repr__(self):
-        return "<TextMP: {}>".format(self.title)
 
 
 class ImageMP(db.Model):

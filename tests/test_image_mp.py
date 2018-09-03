@@ -18,11 +18,16 @@ class ImageMPTestCase(unittest.TestCase):
         with self.app.app_context():
             db.create_all()
 
-    def register_user(self, email="test@will.com", password="tarheels"):
+    def register_user(self, email="test@will.com", password="tarheels", quip="gogogo", location="durham",
+                        photo="http://test-photo.com/me", display_name="algernon"):
         """Registers a test user"""
         user_data = {
             'email': email,
-            'password': password
+            'password': password,
+            'location': location,
+            'quip': quip,
+            'photo': photo,
+            'display_name': display_name
         }
         return self.client().post('/auth/register',  data=user_data)
 
@@ -103,14 +108,14 @@ class ImageMPTestCase(unittest.TestCase):
         result = self.login_user()
         access_token = json.loads(result.data.decode())['access_token']
 
-        rv = self.client().post(
+        req = self.client().post(
             '/imagemp/',
             headers=dict(Authorization="Bearer " + access_token),
             data={"title": "Sun",
                  "author": 1,
                  "post": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Sun_poster.svg"
             })
-        self.assertEqual(rv.status_code, 201)
+        self.assertEqual(req.status_code, 201)
         res = self.client().delete('/imagemp/1', headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res.status_code, 200)
         # 404 if post DNE

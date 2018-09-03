@@ -17,11 +17,16 @@ class TextMPTestCase(unittest.TestCase):
         with self.app.app_context():
             db.create_all()
 
-    def register_user(self, email="test@will.com", password="tarheels"):
+    def register_user(self, email="test@will.com", password="tarheels", quip="gogogo", location="durham",
+                        photo="http://test-photo.com/me", display_name="algernon"):
         """Registers a test user"""
         user_data = {
             'email': email,
-            'password': password
+            'password': password,
+            'location': location,
+            'quip': quip,
+            'photo': photo,
+            'display_name': display_name
         }
         return self.client().post('/auth/register', data=user_data)
 

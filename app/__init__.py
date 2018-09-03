@@ -17,6 +17,58 @@ def create_app(config_name):
     db.init_app(app)
 
     CORS(app, resources=r'/*')
+
+    @app.route('/user/<string:email>', methods=['GET', 'DELETE', 'PUT'])
+    def user(email, **kwargs):
+        auth_header = request.headers.get('Authorization')
+        access_token = auth_header.split(" ")[1]
+
+        if access_token:
+            user_id = User.decode_token(access_token)
+            # if error user_id is a string
+            if not isinstance(user_id, str):
+                user = User.get(email)
+                if request.method == "GET":
+                    if user:
+                        response = jsonify({
+                            'email': user.email,
+                            'location': user.location,
+                            'quip': user.quip,
+                            'photo': user.photo,
+                            'display_name': user.display_name
+                        })
+                        response.status_code = 200
+                        return response
+                        
+                elif request.method == "DELETE":
+                    user.delete()
+                    return {
+                        "message": "User {} deleted successfully".format(email)
+                    }, 200  
+                elif request.method == "PUT":
+                    user.display_name = str(request.data.get('display_name', ''))
+                    user.location = str(request.data.get('location', ''))
+                    user.quip = str(request.data.get('quip', ''))
+                    user.photo = str(request.data.get('photo', ''))
+                    user.save()
+                    response = jsonify({
+                        'email': user.email,
+                        'location': user.location,
+                        'quip': user.quip,
+                        'photo': user.photo,
+                        'display_name': user.display_name
+                    })
+                    response.status_code = 200
+                    return response
+                else:
+                    return make_response({'error' : 'Invalid request method'}), 400
+        
+            else:
+                message = user_id
+                response = {
+                    'message': message
+                }
+                return make_response(jsonify(response)), 401
     
     @app.route('/textmp/', methods=['POST', 'GET'])
     def textmps():
