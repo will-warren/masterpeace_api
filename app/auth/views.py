@@ -57,7 +57,6 @@ class LoginView(MethodView):
                 access_token = user.generate_token(user.id)
                 if access_token:
                     response = {
-                        'message': 'You logged in successfully',
                         'access_token': access_token.decode(),
                         'user_name': user.user_name,
                         'email': user.email,

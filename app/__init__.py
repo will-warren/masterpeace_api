@@ -31,11 +31,17 @@ def create_app(config_name):
                 if request.method == "GET":
                     if user:
                         response = jsonify({
-                            'email': user.email,
-                            'location': user.location,
-                            'quip': user.quip,
-                            'photo': user.photo,
-                            'user_name': user.user_name
+                            'data': {
+                                'type': 'user',
+                                'id': user.email,
+                                'attributes': {
+                                    'email': user.email,
+                                    'location': user.location,
+                                    'quip': user.quip,
+                                    'photo': user.photo,
+                                    'user_name': user.user_name
+                                }
+                            }
                         })
                         response.status_code = 200
                         return response
@@ -52,11 +58,17 @@ def create_app(config_name):
                     user.photo = str(request.data.get('photo', ''))
                     user.save()
                     response = jsonify({
-                        'email': user.email,
-                        'location': user.location,
-                        'quip': user.quip,
-                        'photo': user.photo,
-                        'user_name': user.user_name
+                        'data': [{
+                            'type': 'user',
+                            'id': user.id,
+                            'attributes': {
+                                'email': user.email,
+                                'location': user.location,
+                                'quip': user.quip,
+                                'photo': user.photo,
+                                'user_name': user.user_name
+                            }
+                        }]
                     })
                     response.status_code = 200
                     return response
