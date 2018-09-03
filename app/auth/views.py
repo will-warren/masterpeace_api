@@ -21,7 +21,7 @@ class RegistrationView(MethodView):
                 user.location=post_data['location']
                 user.quip=post_data['quip']
                 user.photo=post_data['photo']
-                user.display_name=post_data['display_name']
+                user.user_name=post_data['user_name']
                 user.save()
 
                 response = {
@@ -59,7 +59,8 @@ class LoginView(MethodView):
                     response = {
                         'message': 'You logged in successfully',
                         'access_token': access_token.decode(),
-                        'user_name': user.email
+                        'user_name': user.user_name,
+                        'email': user.email,
                     }
                     return make_response(jsonify(response)), 200
             else:

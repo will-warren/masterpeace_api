@@ -16,7 +16,7 @@ class UserTestCase(unittest.TestCase):
             "location": "Durham",
             "quip": "witty test remark",
             "photo": "http://photoimage.com",
-            "display_name": "test_name"
+            "user_name": "test_name"
         }
 
         with self.app.app_context():
@@ -30,7 +30,7 @@ class UserTestCase(unittest.TestCase):
             'location': self.user['location'],
             'quip': self.user['quip'],
             'photo': self.user['photo'],
-            'display_name': self.user['display_name']
+            'user_name': self.user['user_name']
         }
         return self.client().post('/auth/register',  data=user_data)
 
@@ -71,7 +71,7 @@ class UserTestCase(unittest.TestCase):
         access_token = json.loads(result.data.decode())['access_token']
 
         res = self.client().put('/user/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token), 
-            data={'location': 'Raleigh', 'display_name': 'new name', 'quip': 'boo dap doo bah', 'photo': 'ellis.png'})
+            data={'location': 'Raleigh', 'user_name': 'new name', 'quip': 'boo dap doo bah', 'photo': 'ellis.png'})
         self.assertEqual(result.status_code, 200)
         self.assertIn('Raleigh', str(res.data))
         self.assertIn('new name', str(res.data))

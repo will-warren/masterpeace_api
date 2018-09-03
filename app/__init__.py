@@ -35,7 +35,7 @@ def create_app(config_name):
                             'location': user.location,
                             'quip': user.quip,
                             'photo': user.photo,
-                            'display_name': user.display_name
+                            'user_name': user.user_name
                         })
                         response.status_code = 200
                         return response
@@ -46,7 +46,7 @@ def create_app(config_name):
                         "message": "User {} deleted successfully".format(email)
                     }, 200  
                 elif request.method == "PUT":
-                    user.display_name = str(request.data.get('display_name', ''))
+                    user.user_name = str(request.data.get('user_name', ''))
                     user.location = str(request.data.get('location', ''))
                     user.quip = str(request.data.get('quip', ''))
                     user.photo = str(request.data.get('photo', ''))
@@ -56,7 +56,7 @@ def create_app(config_name):
                         'location': user.location,
                         'quip': user.quip,
                         'photo': user.photo,
-                        'display_name': user.display_name
+                        'user_name': user.user_name
                     })
                     response.status_code = 200
                     return response

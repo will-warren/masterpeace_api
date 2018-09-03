@@ -22,9 +22,9 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=256), nullable=False),
     sa.Column('password', sa.String(length=256), nullable=False),
-    sa.Column('display_name', sa.String(length=15), nullable=True),
+    sa.Column('user_name', sa.String(length=15), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('display_name'),
+    sa.UniqueConstraint('user_name'),
     sa.UniqueConstraint('email')
     )
     op.create_table('ImageMP',

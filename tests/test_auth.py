@@ -17,7 +17,7 @@ class AuthTestCase(unittest.TestCase):
             'location': 'my desk',
             'quip': 'computers',
             'photo': 'http://profilephoto.com',
-            'display_name': 'eye_heart_tests'
+            'user_name': 'eye_heart_tests'
         }
 
         with self.app.app_context():

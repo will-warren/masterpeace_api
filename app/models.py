@@ -15,7 +15,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    display_name = db.Column(db.String(15), unique=True) #default will be email
+    user_name = db.Column(db.String(15), unique=True) #default will be email
     textmps = db.relationship(
         'TextMP', order_by='TextMP.id', cascade="all, delete-orphan")
     imagemps = db.relationship(

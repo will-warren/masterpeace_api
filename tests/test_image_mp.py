@@ -19,7 +19,7 @@ class ImageMPTestCase(unittest.TestCase):
             db.create_all()
 
     def register_user(self, email="test@will.com", password="tarheels", quip="gogogo", location="durham",
-                        photo="http://test-photo.com/me", display_name="algernon"):
+                        photo="http://test-photo.com/me", user_name="algernon"):
         """Registers a test user"""
         user_data = {
             'email': email,
@@ -27,7 +27,7 @@ class ImageMPTestCase(unittest.TestCase):
             'location': location,
             'quip': quip,
             'photo': photo,
-            'display_name': display_name
+            'user_name': user_name
         }
         return self.client().post('/auth/register',  data=user_data)
 
