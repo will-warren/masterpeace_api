@@ -18,7 +18,7 @@ def create_app(config_name):
 
     CORS(app, resources=r'/*')
 
-    @app.route('/user/<string:email>', methods=['GET', 'DELETE', 'PUT'])
+    @app.route('/users/<string:email>', methods=['GET', 'DELETE', 'PUT'])
     def user(email, **kwargs):
         auth_header = request.headers.get('Authorization')
         access_token = auth_header.split(" ")[1]

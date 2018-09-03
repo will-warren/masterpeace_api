@@ -48,7 +48,7 @@ class UserTestCase(unittest.TestCase):
         result = self.login_user()
         access_token = json.loads(result.data.decode())['access_token']
 
-        res = self.client().get('/user/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
+        res = self.client().get('/users/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res.status_code, 200)
         self.assertIn('test_name', str(res.data))
 
@@ -58,10 +58,10 @@ class UserTestCase(unittest.TestCase):
         result = self.login_user()
         access_token = json.loads(result.data.decode())['access_token']
 
-        res = self.client().delete('/user/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
+        res = self.client().delete('/users/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(res.status_code, 200)
         # 404 if user DNE
-        result = self.client().get('/user/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
+        result = self.client().get('/users/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token))
         self.assertEqual(result.status_code, 404)
 
     def test_update_user(self):
@@ -70,7 +70,7 @@ class UserTestCase(unittest.TestCase):
         result = self.login_user()
         access_token = json.loads(result.data.decode())['access_token']
 
-        res = self.client().put('/user/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token), 
+        res = self.client().put('/users/{}'.format(self.user['email']), headers=dict(Authorization="Bearer " + access_token), 
             data={'location': 'Raleigh', 'user_name': 'new name', 'quip': 'boo dap doo bah', 'photo': 'ellis.png'})
         self.assertEqual(result.status_code, 200)
         self.assertIn('Raleigh', str(res.data))
