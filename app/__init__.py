@@ -99,12 +99,17 @@ def create_app(config_name):
                         textmp.author = str(request.data.get('author', user_id))
                         textmp.save()
                         response = jsonify({
-                            'id'    : textmp.id,
-                            'title' : textmp.title,
-                            'author': textmp.author,
-                            'post'  : textmp.post,
-                            'date_created' : textmp.date_created,
-                            'date_modified': textmp.date_modified
+                            'data': [{
+                                'type': 'textmp',
+                                'id': textmp.id,
+                                'attributes': {
+                                    'title': textmp.title,
+                                    'author': textmp.author,
+                                    'post': textmp.post,
+                                    'date_created': textmp.date_created,
+                                    'date_modified': textmp.date_modified
+                                }
+                            }]
                         })
                         response.status_code = 201
                         return response
@@ -115,15 +120,18 @@ def create_app(config_name):
 
                     for mp in textmps:
                         obj = {
+                            'type': 'textmp',
                             'id'    : mp.id,
-                            'title' : mp.title,
-                            'author': mp.author,
-                            'post'  : mp.post,
-                            'date_created' : mp.date_created,
-                            'date_modified': mp.date_modified
+                            'attributes': {
+                                'title' : mp.title,
+                                'author': mp.author,
+                                'post'  : mp.post,
+                                'date_created' : mp.date_created,
+                                'date_modified': mp.date_modified
+                            }
                         }
                         results.append(obj)
-                    response = jsonify(results)
+                    response = jsonify({ 'data': results })
                     response.status_code = 200
                     return response
             
@@ -136,7 +144,7 @@ def create_app(config_name):
     
  
 
-    @app.route('/textmp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/textmp/<string:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_textmps(id, **kwargs):
         auth_header = request.headers.get('Authorization')
         access_token = auth_header.split(" ")[1]
@@ -163,12 +171,17 @@ def create_app(config_name):
                     textmp.author = str(request.data.get('author', ''))
                     textmp.save()
                     response = jsonify({
+                        'data': [{
+                            'type': 'textmp',
                             'id'    : textmp.id,
-                            'title' : textmp.title,
-                            'author': textmp.author,
-                            'post'  : textmp.post,
-                            'date_created' : textmp.date_created,
-                            'date_modified': textmp.date_modified
+                            'attributes': {
+                                'title' : textmp.title,
+                                'author': textmp.author,
+                                'post'  : textmp.post,
+                                'date_created' : textmp.date_created,
+                                'date_modified': textmp.date_modified
+                            }
+                        }]
                     })
                     response.status_code = 200
                     return response
@@ -176,12 +189,17 @@ def create_app(config_name):
                 else:
                     # GET
                     response = jsonify({
+                        'data': [{
+                            'type': 'textmp',
                             'id'    : textmp.id,
-                            'title' : textmp.title,
-                            'author': textmp.author,
-                            'post'  : textmp.post,
-                            'date_created' : textmp.date_created,
-                            'date_modified': textmp.date_modified
+                            'attributes': {
+                                'title' : textmp.title,
+                                'author': textmp.author,
+                                'post'  : textmp.post,
+                                'date_created' : textmp.date_created,
+                                'date_modified': textmp.date_modified
+                            }
+                        }]
                     })
                     response.status_code = 200
                     return response
@@ -211,12 +229,17 @@ def create_app(config_name):
                         imagemp.author = str(request.data.get('author', ''))
                         imagemp.save()
                         response = jsonify({
-                            'id'    : imagemp.id,
-                            'title' : imagemp.title,
-                            'author': imagemp.author,
-                            'post'  : imagemp.post,
-                            'date_created' :    imagemp.date_created,
-                            'date_modified':    imagemp.date_modified
+                            'data': [{
+                                'type': 'imagemp',
+                                'id': imagemp.id,
+                                'attributes': {
+                                    'title': imagemp.title,
+                                    'author': imagemp.author,
+                                    'post': imagemp.post,
+                                    'date_created': imagemp.date_created,
+                                    'date_modified': imagemp.date_modified
+                                }
+                            }]
                         })
                         response.status_code = 201
                         return response
@@ -227,15 +250,18 @@ def create_app(config_name):
 
                     for mp in imagemps:
                         obj = {
+                            'type': 'imagemp',
                             'id'    : mp.id,
-                            'title' : mp.title,
-                            'author': mp.author,
-                            'post'  : mp.post,
-                            'date_created' : mp.date_created,
-                            'date_modified': mp.date_modified
+                            'attributes': {
+                                'title' : mp.title,
+                                'author': mp.author,
+                                'post'  : mp.post,
+                                'date_created' : mp.date_created,
+                                'date_modified': mp.date_modified
+                            }
                         }
                         results.append(obj)
-                    response = jsonify(results)
+                    response = jsonify({'data': results})
                     response.status_code = 200
                     return response
             else:
@@ -245,7 +271,7 @@ def create_app(config_name):
                 }
                 return make_response(jsonify(response)), 401
 
-    @app.route('/imagemp/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+    @app.route('/imagemp/<string:id>', methods=['GET', 'PUT', 'DELETE'])
     def mod_imagemps(id, **kwargs):
         auth_header = request.headers.get('Authorization')
         access_token = auth_header.split(" ")[1]
@@ -272,12 +298,17 @@ def create_app(config_name):
                     imagemp.author = str(request.data.get('author', ''))
                     imagemp.save()
                     response = jsonify({
-                            'id'    : imagemp.id,
-                            'title' : imagemp.title,
-                            'author': imagemp.author,
-                            'post'  : imagemp.post,
-                            'date_created' : imagemp.date_created,
-                            'date_modified': imagemp.date_modified
+                            'data': [{
+                                'type': 'imagemp',
+                                'id'    : imagemp.id,
+                                'attributes': {
+                                    'title' : imagemp.title,
+                                    'author': imagemp.author,
+                                    'post'  : imagemp.post,
+                                    'date_created' : imagemp.date_created,
+                                    'date_modified': imagemp.date_modified
+                                }
+                            }]
                     })
                     response.status_code = 200
                     return response
@@ -285,12 +316,17 @@ def create_app(config_name):
                 else:
                     # GET
                     response = jsonify({
+                        'data': [{
+                            'type': 'imagemp',
                             'id'    : imagemp.id,
-                            'title' : imagemp.title,
-                            'author': imagemp.author,
-                            'post'  : imagemp.post,
-                            'date_created' : imagemp.date_created,
-                            'date_modified': imagemp.date_modified
+                            'attributes': {
+                                'title' : imagemp.title,
+                                'author': imagemp.author,
+                                'post'  : imagemp.post,
+                                'date_created' : imagemp.date_created,
+                                'date_modified': imagemp.date_modified
+                            }
+                        }]
                     })
                     response.status_code = 200
                     return response

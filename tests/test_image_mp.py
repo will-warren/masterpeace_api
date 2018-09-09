@@ -71,7 +71,7 @@ class ImageMPTestCase(unittest.TestCase):
         self.assertEqual(rv.status_code, 201)
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
-            '/imagemp/{}'.format(result_in_json['id']), 
+            '/imagemp/{}'.format(result_in_json['data'][0]['id']), 
             headers=dict(Authorization="Bearer " + access_token)
         )
         self.assertEqual(result.status_code, 200)

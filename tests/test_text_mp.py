@@ -72,7 +72,7 @@ class TextMPTestCase(unittest.TestCase):
 
         result_in_json = json.loads(rv.data.decode('utf-8').replace("'", "\""))
         result = self.client().get(
-            '/textmp/{}'.format(result_in_json['id']), 
+            '/textmp/{}'.format(int(result_in_json['data'][0]['id'])), 
             headers=dict(Authorization="Bearer " +access_token)
             )
 
