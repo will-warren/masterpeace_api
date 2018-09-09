@@ -6,13 +6,21 @@ import jwt
 
 ## TODO add patch, options methods to all models
 
+class Base(db.Model):
 
-class User(db.Model):
+    __abstract__ = True
+
+    id = db.Column(db.Integer, primary_key=True)
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+    date_modified = db.Column(
+        db.DateTime, default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp())
+
+class User(Base):
     """ This represents the User model """
 
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     user_name = db.Column(db.String(15), unique=True) #default will be email
@@ -90,19 +98,15 @@ class User(db.Model):
         except jwt.InvalidTokenError:
             return "Invalid token. Please register or login"
 
-class TextMP(db.Model):
+
+class TextMP(Base):
     """This class represents the TextMP table."""
 
     __tablename__ = 'TextMP'
 
-    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(55))
     author = db.Column(db.Integer, db.ForeignKey(User.id))
     post = db.Column(db.String(1000))
-    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-    date_modified = db.Column(
-        db.DateTime, default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp())
     # tags - many to many
     # likes - one to many, count of user ids
 
@@ -125,19 +129,14 @@ class TextMP(db.Model):
         db.session.commit()
 
 
-class ImageMP(db.Model):
+class ImageMP(Base):
     """This class represents the ImageMP table."""
 
     __tablename__ = 'ImageMP'
 
-    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(55))
     author = db.Column(db.Integer, db.ForeignKey(User.id))
     post = db.Column(db.String(1000)) # url to the photo
-    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-    date_modified = db.Column(
-        db.DateTime, default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp())
     # tags - many to many
     # likes - one to many, count of user ids
 
