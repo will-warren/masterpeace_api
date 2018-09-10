@@ -4,7 +4,10 @@ import unittest
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from app import db, create_app
-from app.models import TextMP, ImageMP, User
+
+from app.textmp.models import TextMP
+from app.imagemp.models import ImageMP
+from app.user.models import User
 
 app = create_app(config_name='development')
 migrate = Migrate(app, db)

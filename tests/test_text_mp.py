@@ -120,7 +120,7 @@ class TextMPTestCase(unittest.TestCase):
         self.assertEqual(rv.status_code, 201)
 
         res = self.client().delete('/textmp/1', headers=dict(Authorization="Bearer " +access_token))
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 204)
 
         # 404 if post DNE
         result = self.client().get('/textmp/1', headers=dict(Authorization="Bearer " +access_token))

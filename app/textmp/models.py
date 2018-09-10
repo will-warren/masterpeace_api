@@ -1,7 +1,7 @@
 from app import db
-from flask import abort, current_app
-from datetime import datetime, timedelta
+from flask import current_app
 from app.models import Base
+from app.user.models import User
 
 class TextMP(Base):
     """This class represents the TextMP table."""
