@@ -5,6 +5,12 @@ from flask import abort, make_response, request, jsonify
 
 from app.user.models import User
 
+#JSON API Error Object
+UNAUTH_ERROR = {
+    'status': 401,
+    'title': 'Access Denied'
+}
+
 
 class UserView(MethodView):
 
@@ -36,10 +42,10 @@ class UserView(MethodView):
                 return response
             
             else:
-                return make_response({'errors': {'message': 'RESOURCE NOT FOUND'}}), 404
+                abort(404)
         
         else:
-            return make_response({'errors': {'message': 'UNAUTHORIZED ACCESS'}}), 401
+            return make_response({'errors': [UNAUTH_ERROR]}), 401
 
     def put(self, email):
         access_token = self.__authenticate__(request)
@@ -68,9 +74,9 @@ class UserView(MethodView):
                 response.status_code = 200
                 return response
             else:
-                return make_response({'errors': {'message': 'USER NOT FOUND'}}), 404
+                abort(404)
         else:
-            return make_response({'errors' : {'message': 'UNAUTHORIZED REQUEST'}}), 401
+            return make_response({'errors' : [UNAUTH_ERROR]}), 401
             
     def delete(self, email):
         access_token = self.__authenticate__(request)
@@ -84,7 +90,7 @@ class UserView(MethodView):
                 }]
             }), 200 
         else:
-            return make_response({'errors': {'message': 'UNAUTHORIZED ACCESS'}}), 401
+            return make_response({'errors': [UNAUTH_ERROR]}), 401
 
 user_view = UserView.as_view('user_view')
 

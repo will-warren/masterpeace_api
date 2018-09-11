@@ -6,7 +6,18 @@ from flask import abort, make_response, request, jsonify
 from app.textmp.models import TextMP
 from app.user.models import User
 
-# textmp = Blueprint('textmp', __name__, url_prefix='/textmp')
+#JSON API Error Objects
+BAD_REQ_ERROR = {
+    'status': 400,
+    'title': 'We don\'t understand what you want'
+}
+
+UNAUTH_ERROR = {
+    'status': 401,
+    'title': 'Access Denied'
+}
+
+
 # image file will be read as a url but loaded as a file
 # need to add file upload for images (POST)
 class TextMPView(MethodView):
@@ -46,8 +57,10 @@ class TextMPView(MethodView):
                     response.status_code = 201
                 else:
                     response.status_code = 400
+                    response.errors = [BAD_REQ_ERROR]
         else:
             response.status_code = 401
+            response.errors = [UNAUTH_ERROR]
             
         return response
 
@@ -95,6 +108,7 @@ class TextMPView(MethodView):
             return response
         else:
             response.status_code = 401
+            response.errors = [UNAUTH_ERROR]
             return response
 
     def put(self, id):
@@ -130,10 +144,10 @@ class TextMPView(MethodView):
                 return response
             
             else:
-                return make_response({'errors': [{'message': 'BAD REQUEST'}]}), 400
+                return make_response({'errors': [BAD_REQ_ERROR]}), 400
                 
         else:
-            return make_response({'errors': [{'message': 'UNAUTHORIZED ACCESS'}]}), 401
+            return make_response({'errors': [UNAUTH_ERROR]}), 401
 
     def delete(self, id):
         access_token = self.__authenticate__(request)
@@ -143,9 +157,9 @@ class TextMPView(MethodView):
                 abort(404)
 
             textmp.delete()
-            return make_response({'message': 'DELETE SUCCESS'}), 204
+            return make_response({'data': {'message': 'DELETE SUCCESS'} }), 204
         else:
-            return make_response({'errors': [{'message': 'UNAUTHORIZED ACCESS'}]}), 401
+            return make_response({'errors': [UNAUTH_ERROR]}), 401
 
 textmp_view = TextMPView.as_view('textmp_view')
 
